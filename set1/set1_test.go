@@ -3,6 +3,7 @@ package set1
 import (
 	"bytes"
 	"encoding/hex"
+	"io/ioutil"
 	"log"
 	"testing"
 )
@@ -33,4 +34,22 @@ func hexDecode(t *testing.T, s string) []byte {
 	}
 	log.Print(v)
 	return v
+}
+
+func corpusFromFile(t *testing.T, name string) map[rune]float64 {
+	text, err := ioutil.ReadFile(name)
+	if err != nil {
+		t.Fatal("failed to open corpus file:", err)
+	}
+	return buildCorpus(string(text))
+}
+
+func TestChallenge3(t *testing.T) {
+	c := corpusFromFile(t, "dracula.txt")
+	for char, val := range c {
+		t.Logf("%c: %.5f", char, val)
+	}
+
+	res := findSingleXORKey(hexDecode(t, "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"), c)
+	t.Logf("%s", res)
 }
